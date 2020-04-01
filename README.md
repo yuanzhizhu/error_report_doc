@@ -8,6 +8,12 @@
 
 ## 二、我们需要哪些错误？
 
+### 0、接口错误
+
+比如 `XMLHTTPRequest` 错误，或者 `fetch` 错误（fetch 错误暂未实践）。
+
+需要通过劫持 `XMLHTTPRequest` 上的部分方法去实现监听。
+
 ### 1、一般错误
 
 是指 `SyntaxError`，`ReferenceError`……`TypeError`等等的错误。这些错误能直接被 `window.onerror = fn` 方式监听到。
@@ -84,8 +90,22 @@ window.addEventListener(
 
 若为以上约定， 则 `xhr.prototype.onerror` 被触发到的，往往就只有 `40x` 的情况了。因为当服务端错误时，是在 `xhr.protype.onStateChange` 中，去判断响应 JSON 中的 `code`。当 `code` 不为 `0` 的时候，才判断为错误，进而上报 `request data` 、 `response data` 、 `接口url`。
 
-## 四、接口错误只是这么简单吗？
+## 四、接口错误监控，有多大意义呢？
 
-其实上面的“三”所提到的内容很简单。那么上面的“三”，所做的工作到底，有多少意义呢？
+上面的“三”所提到的内容很简单。那么到底是否有意义呢？
+
+事实上，对于一个具备完整监控的后端服务，前端接口错误监控的作用，是被弱化了的。
+
+举个最简单的例子，前端接口错误监控抓取的 `request data` 、 `response data` 、 `接口url`，后端日志会没记录吗？甚至后端日志能够查的更清晰，比如调用者是谁，等等，都能查到。
+
+## 五、重谈跨域
+
+为什么要重新谈跨域呢？
+
+因为，我们现在为了提高加载速度，通常把打包好的 js 传到 CDN。
+
+那么，当引入 CDN 上面 js 的时候，通常跨域的。一旦跨域js报错，通过 `window.onerror` 是无法捕获到错误的详细信息的（只有 Script Error）
+
+解决这个问题之前，先说 Why ，再说 How……
 
 
